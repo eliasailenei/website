@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>COMP1828 Group Finder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #111;
+    color: #eee;
+    text-align: center;
+    padding: 30px;
+  }
+  input[type="file"], input[type="text"] {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 80%;
+    max-width: 500px;
+    font-size: 16px;
+  }
+  button {
+    padding: 8px 16px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #00bcd4;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover { background: #0097a7; }
+  #results {
+    margin-top: 25px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+  }
+  .group-member {
+    border-bottom: 1px solid #333;
+    padding: 6px 0;
+  }
+  .copy-box {
+    background: #222;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    word-wrap: break-word;
+  }
+</style>
+</head>
+<body>
+<h1>COMP-1828 Group Finder</h1>
+<p>Upload the <b>CW_group_allocation_2025-26_v1_11Oct1617.pdf</b> file below. All parsing stays local.</p>
+<input type="file" id="pdfFile" accept="application/pdf">
+<br>
+<input type="text" id="searchBox" placeholder="Search by group number (e.g. 11-3) or name...">
+<div id="results"></div>
+
+<script>
+let db = [];
+
+async function extractTextFromPDF(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const strings = content.items.map(item => item.str);
+    text += strings.join(" ") + "\n";
+  }
+  return text;
+}
+
+function parseDatabase(text) {
+  const lines = text.split(/\n|(?=[A-Z][a-z]+,)/);
+  const pattern = /([\w'.\- ]+), ([A-Za-z \-']+).*?\[(\d+)\]\s*(\d{2}-\d)\s*[\s\S]*?,\s*([\w\d]+@gre\.ac\.uk)/g;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    db.push({
+      name: (match[1] + " " + match[2]).trim(),
+      id: match[3],
+      group: match[4],
+      email: match[5]
+    });
+  }
+
+  // find lab colour per section header
+  const colorMatches = [...text.matchAll(/Lab\s+(\d+).*?\((Black|Blue|.*?)\)/gi)];
+  const labColors = {};
+  for (const m of colorMatches) labColors[m[1]] = m[2];
+
+  db.forEach(p => {
+    const lab = p.group.split('-')[0];
+    p.color = labColors[lab] || "Unknown";
+  });
+  localStorage.setItem("groupDB", JSON.stringify(db));
+  alert(`Loaded ${db.length} entries.`);
+}
+
+document.getElementById("pdfFile").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById("results").innerHTML = "<p>Processing PDF, please wait...</p>";
+  const text = await extractTextFromPDF(file);
+  parseDatabase(text);
+  document.getElementById("results").innerHTML = "<p>PDF processed. You can now search.</p>";
+});
+
+document.getElementById("searchBox").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  const resDiv = document.getElementById("results");
+  if (!q) { resDiv.innerHTML = ""; return; }
+  if (db.length === 0) {
+    const cached = localStorage.getItem("groupDB");
+    if (cached) db = JSON.parse(cached);
+    else return resDiv.innerHTML = "<p>Please load the PDF first.</p>";
+  }
+
+  if (/^\d{2}-\d$/.test(q)) {
+    // search by group number
+    const members = db.filter(p => p.group.toLowerCase() === q);
+    if (members.length === 0) return resDiv.innerHTML = "<p>No results found.</p>";
+    let html = `<h2>Group ${q}</h2>`;
+    html += `<p><b>Colour:</b> ${members[0].color}</p>`;
+    html += members.map(m => `<div class="group-member">${m.name} — ${m.email}</div>`).join("");
+    const emails = members.map(m => m.email).join("; ");
+    html += `<div class="copy-box">${emails}</div>`;
+    html += `<button onclick="navigator.clipboard.writeText('${emails}')">Copy Emails</button>`;
+    resDiv.innerHTML = html;
+  } else {
+    // name search
+    const matches = db.filter(p => p.name.toLowerCase().includes(q));
+    if (matches.length === 0) return resDiv.innerHTML = "<p>No matches found.</p>";
+    let html = "<h2>Search Results</h2>";
+    html += matches.map(p => `<div class="group-member"><b>${p.name}</b> — Group ${p.group} (${p.color}) — ${p.email}</div>`).join("");
+    resDiv.innerHTML = html;
+  }
+});
+</script>
+</body>
+</html>
