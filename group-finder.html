@@ -2,57 +2,78 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>COMP1828 Group Finder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>COMP-1828 Group Finder</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <style>
-  /* Base styles */
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #0c0c0c;
+    color: #f2f2f2;
+    font-family: "Inter", "SF Pro Display", system-ui, sans-serif;
+  }
+
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #111;
-    color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
     padding: 20px;
-    margin: 0;
   }
 
   h1 {
     font-size: 1.8rem;
-    margin-bottom: 0.5em;
+    font-weight: 600;
+    margin-bottom: 0.4em;
   }
 
   p {
-    font-size: 0.95rem;
-    color: #ccc;
-    line-height: 1.5;
+    font-size: 1rem;
+    color: #aaa;
+    margin-bottom: 1em;
+    max-width: 90%;
   }
 
-  input[type="file"], input[type="text"] {
+  input[type="file"],
+  input[type="text"] {
     display: block;
-    margin: 12px auto;
-    padding: 12px;
-    border-radius: 10px;
+    margin: 10px auto;
+    padding: 14px 16px;
+    border-radius: 12px;
     border: none;
-    width: 90%;
-    max-width: 480px;
+    width: 100%;
+    max-width: 400px;
     font-size: 1rem;
-    background: #222;
-    color: #eee;
-    box-sizing: border-box;
+    background: #1a1a1a;
+    color: #f2f2f2;
+    box-shadow: inset 0 0 0 1px #333;
+    transition: box-shadow 0.2s;
   }
 
   input[type="text"]::placeholder {
     color: #777;
   }
 
+  input[type="file"]:focus,
+  input[type="text"]:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1.5px #00bcd4;
+  }
+
   button {
-    padding: 10px 20px;
-    margin: 12px 0;
-    border-radius: 8px;
+    padding: 12px 20px;
+    margin: 15px 0;
+    border-radius: 10px;
     border: none;
     background: #00bcd4;
     color: white;
-    cursor: pointer;
     font-size: 1rem;
+    font-weight: 600;
+    width: 90%;
+    max-width: 400px;
+    cursor: pointer;
     transition: background 0.2s;
   }
 
@@ -62,70 +83,38 @@
   }
 
   #results {
-    margin-top: 25px;
-    background: #1e1e1e;
-    border-radius: 10px;
+    background: #181818;
+    border-radius: 14px;
     padding: 20px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
     text-align: left;
-    word-wrap: break-word;
+    overflow-y: auto;
   }
 
   .group-member {
     border-bottom: 1px solid #333;
-    padding: 8px 0;
+    padding: 10px 0;
     font-size: 0.95rem;
   }
 
   .copy-box {
     background: #222;
     padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
     font-family: monospace;
     font-size: 0.9rem;
     overflow-x: auto;
+    word-wrap: break-word;
   }
 
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 1.4rem;
-    }
-
-    #results {
-      padding: 15px;
-      font-size: 0.9rem;
-    }
-
-    button {
-      width: 90%;
-      font-size: 1rem;
-    }
-
-    .copy-box {
-      font-size: 0.85rem;
-      padding: 10px;
-    }
-  }
-
-  /* Very small screens (phones under 400px) */
-  @media (max-width: 400px) {
-    body {
-      padding: 10px;
-    }
-    h1 {
-      font-size: 1.2rem;
-    }
-    input[type="file"], input[type="text"] {
-      width: 95%;
-      font-size: 0.9rem;
-    }
-    button {
-      font-size: 0.9rem;
-    }
+  @media (max-width: 600px) {
+    h1 { font-size: 1.6rem; }
+    p { font-size: 0.95rem; }
+    input, button { font-size: 1rem; }
+    #results { padding: 16px; }
   }
 </style>
 </head>
