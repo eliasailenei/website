@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>clrsPython Helper</title>
+<style>
+    body {
+        margin: 0;
+        background-color: #000;
+        color: #ccc;
+        font-family: "Segoe UI", Consolas, monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px;
+    }
+
+    h1 {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    p, pre {
+        max-width: 800px;
+        line-height: 1.5em;
+    }
+
+    pre {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 14px;
+        white-space: pre;
+    }
+
+    code {
+        color: #ffcc66;
+    }
+
+    .btn {
+        margin-top: 20px;
+        background-color: #444;
+        border: none;
+        padding: 10px 24px;
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background 0.2s;
+    }
+
+    .btn:hover {
+        background-color: #666;
+    }
+
+    /* Blue state for the button when activated */
+    .btn-blue {
+        background-color: #007bff;
+    }
+
+    .btn-blue:hover {
+        background-color: #0056b3;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Prevent selecting/copying when this class is present */
+    #code-block.nocopy,
+    #code-block.nocopy code {
+        user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .checkbox-area {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        user-select: none;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.3);
+        accent-color: #888;
+        cursor: pointer;
+    }
+
+    .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+
+<h1>clrsPython helper</h1>
+<p>
+This hotfix allows you to use the provided library for this coursework more easily.<br>
+You just need to import <code>clrsPython</code> and use <code>clrsPython.get('python file name')</code>.
+</p>
+
+<pre><code>import clrsPython  # creds to eliasailenei
+bfs = clrsPython.get('bfs')
+
+# you can now use the library without worrying about other dependencies or library importing errors
+</code></pre>
+
+<h2>Ready to copy/paste code</h2>
+
+<pre id="code-block"><code># © 2025 Elias Ailenei — Licensed under the MIT License 
+# Please give credit where it's due if you use this code in your projects 
+# (unless I allow you to not credit me for other reasons like if you are in my group). Thanks =)
+#########################################################################
+import sys, os, glob, importlib.util, subprocess
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+clrs_root = os.path.join(current_dir, "clrsPython")
+
+if not os.path.isdir(clrs_root):
+    print("[clrsPython] Folder not found — downloading CLRS library...")
+    zip_path = os.path.join(current_dir, "clrsPython.zip")
+    url = "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/11599/clrsPython.zip"
+    subprocess.call(f'curl -L -o "{zip_path}" "{url}"', shell=True)
+    if os.name == "nt":  # Windows
+        subprocess.call(f'powershell -Command "Expand-Archive -Path \'{zip_path}\' -DestinationPath \'{current_dir}\'"', shell=True)
+    else:  # Linux/macOS
+        subprocess.call(f'unzip -o "{zip_path}" -d "{current_dir}"', shell=True)
+    if os.path.exists(zip_path):
+        os.remove(zip_path)
+    print("[clrsPython] Download complete ✅")
+
+if clrs_root not in sys.path:
+    sys.path.append(clrs_root)
+
+for sub in glob.glob(os.path.join(clrs_root, "*")):
+    if os.path.isdir(sub) and sub not in sys.path:
+        sys.path.append(sub)
+
+
+def get(name):
+    matches = glob.glob(os.path.join(clrs_root, "**", f"{name}.py"), recursive=True)
+    if not matches:
+        raise ModuleNotFoundError(f"Could not find {name}.py anywhere inside clrsPython/")
+    file_path = matches[0]
+
+    spec = importlib.util.spec_from_file_location(name, file_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # Return first class found, else module
+    for attr in dir(mod):
+        obj = getattr(mod, attr)
+        if isinstance(obj, type):
+            return obj
+    return mod
+</code></pre>
+
+<div class="checkbox-area">
+    <input type="checkbox" id="agree">
+    <label for="agree">I agree to give credit where needed</label>
+</div>
+
+<button id="downloadBtn" class="btn" disabled>Download clrsPython helper</button>
+
+<div class="footer">© 2025 Elias Ailenei — MIT License</div>
+
+<script>
+(() => {
+    const agree = document.getElementById("agree");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const codeBlock = document.getElementById("code-block");
+
+    // Start with copying disabled
+    codeBlock.classList.add('nocopy');
+
+    // Enable/disable download button based on checkbox
+    agree.addEventListener('change', function() {
+        downloadBtn.disabled = !this.checked;
+        if (this.checked) {
+            // allow copying when agreed
+            codeBlock.classList.remove('nocopy');
+        } else {
+            codeBlock.classList.add('nocopy');
+        }
+    });
+
+    // Prevent copy shortcuts and context menu when copying not allowed
+    document.addEventListener('copy', function(e) {
+        if (codeBlock.classList.contains('nocopy')) {
+            e.preventDefault();
+            // optional user feedback
+            showTempMessage('You must agree before copying.');
+        }
+    });
+
+    document.addEventListener('cut', function(e) {
+        if (codeBlock.classList.contains('nocopy')) {
+            e.preventDefault();
+            showTempMessage('You must agree before copying.');
+        }
+    });
+
+    // Disable right-click copying on the code block when nocopy
+    codeBlock.addEventListener('contextmenu', function(e) {
+        if (codeBlock.classList.contains('nocopy')) {
+            e.preventDefault();
+            showTempMessage('You must agree before copying.');
+        }
+    });
+
+    // When the user clicks the download button, make it blue
+    downloadBtn.addEventListener('click', function() {
+        // add visual active state
+        downloadBtn.classList.add('btn-blue');
+
+        const code = codeBlock.innerText;
+        const blob = new Blob([code], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'clrsPython.py';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // small helper to show a temporary message to user
+    function showTempMessage(text) {
+        let msg = document.getElementById('temp-msg');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.id = 'temp-msg';
+            msg.style.position = 'fixed';
+            msg.style.bottom = '20px';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.background = 'rgba(0,0,0,0.7)';
+            msg.style.color = '#fff';
+            msg.style.padding = '8px 12px';
+            msg.style.borderRadius = '6px';
+            msg.style.zIndex = 9999;
+            document.body.appendChild(msg);
+        }
+        msg.textContent = text;
+        msg.style.opacity = '1';
+        clearTimeout(msg._t);
+        msg._t = setTimeout(() => { msg.style.opacity = '0'; }, 1800);
+    }
+
+})();
+</script>
+
+</body>
+</html>
