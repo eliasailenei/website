@@ -157,12 +157,21 @@ def get(name):
     spec = importlib.util.spec_from_file_location(name, file_path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
+    
+    def snake_to_pascal(s: str) -> str:
+        return ''.join(p.capitalize() for p in s.split('_'))
 
-    # Return first class found, else module
-    for attr in dir(mod):
-        obj = getattr(mod, attr)
+    pascal = snake_to_pascal(name)
+    if hasattr(mod, pascal):
+        obj = getattr(mod, pascal)
         if isinstance(obj, type):
             return obj
+        
+    classes = [getattr(mod, a) for a in dir(mod)
+               if isinstance(getattr(mod, a), type) and getattr(mod, a).__module__ == mod.__name__]
+    if len(classes) == 1:
+        return classes[0]
+
     return mod
 </code></pre>
 
@@ -262,3 +271,4 @@ def get(name):
 
 </body>
 </html>
+
