@@ -173,7 +173,7 @@ for sub in glob.glob(os.path.join(clrs_root, "*")):
         sys.path.append(sub)
 
 
-def get(name, wholeFile):
+def get(name, wholeFile = False):
     matches = glob.glob(os.path.join(clrs_root, "**", f"{name}.py"), recursive=True)
     if not matches:
         raise ModuleNotFoundError(f"Could not find {name}.py anywhere inside clrsPython/")
@@ -297,6 +297,7 @@ def get(name, wholeFile):
 
 </body>
 </html>
+
 
 
 
