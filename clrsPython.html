@@ -139,6 +139,7 @@ dijkstra = clrsPython.get("dijkstra").dijkstra
 
 # you can now use the library without worrying about other dependencies or library importing errors
 </code></pre>
+<h2>Version 0.2 - added option to import file as whole forcefully (fixes task4)</h2>
 
 <h2>Ready to copy/paste code</h2>
 
@@ -172,7 +173,7 @@ for sub in glob.glob(os.path.join(clrs_root, "*")):
         sys.path.append(sub)
 
 
-def get(name):
+def get(name, wholeFile):
     matches = glob.glob(os.path.join(clrs_root, "**", f"{name}.py"), recursive=True)
     if not matches:
         raise ModuleNotFoundError(f"Could not find {name}.py anywhere inside clrsPython/")
@@ -193,8 +194,9 @@ def get(name):
         
     classes = [getattr(mod, a) for a in dir(mod)
                if isinstance(getattr(mod, a), type) and getattr(mod, a).__module__ == mod.__name__]
-    if len(classes) == 1:
-        return classes[0]
+    if not wholeFile:
+        if len(classes) == 1:
+            return classes[0]
 
     return mod
 </code></pre>
@@ -295,6 +297,7 @@ def get(name):
 
 </body>
 </html>
+
 
 
 
