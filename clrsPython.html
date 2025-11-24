@@ -139,7 +139,7 @@ dijkstra = clrsPython.get("dijkstra").dijkstra
 
 # you can now use the library without worrying about other dependencies or library importing errors
 </code></pre>
-<h2>Version 0.2 - added option to import file as whole forcefully (fixes task4)</h2>
+<h2>Version 0.3 - clrsPython folder no longer needs to be in your root folder... you can keep it 3 structures up (less bloat)</h2>
 
 <h2>Ready to copy/paste code</h2>
 
@@ -149,20 +149,35 @@ dijkstra = clrsPython.get("dijkstra").dijkstra
 #########################################################################
 import sys, os, glob, importlib.util, subprocess
 
+def find_folder_upwards(folder_name: str, start_dir: str, max_backwards: int = 3):
+    search_dir = start_dir
+
+    for _ in range(max_backwards + 1):
+        possible = os.path.join(search_dir, folder_name)
+        if os.path.isdir(possible):
+            return possible
+        # Go up a directory
+        search_dir = os.path.dirname(search_dir)
+
+    return None
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
-clrs_root = os.path.join(current_dir, "clrsPython")
+clrs_root = find_folder_upwards("clrsPython", current_dir, max_backwards=3)
 
 if not os.path.isdir(clrs_root):
     print("[clrsPython] Folder not found — downloading CLRS library...")
+
     zip_path = os.path.join(current_dir, "clrsPython.zip")
     url = "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/11599/clrsPython.zip"
     subprocess.call(f'curl -L -o "{zip_path}" "{url}"', shell=True)
     if os.name == "nt":  # Windows
-        subprocess.call(f'powershell -Command "Expand-Archive -Path \'{zip_path}\' -DestinationPath \'{current_dir}\'"', shell=True)
+        subprocess.call(f'powershell -Command "Expand-Archive -Path \'{zip_path}\' -DestinationPath \'{current_dir}\'"',
+                        shell=True)
     else:  # Linux/macOS
         subprocess.call(f'unzip -o "{zip_path}" -d "{current_dir}"', shell=True)
     if os.path.exists(zip_path):
         os.remove(zip_path)
+
     print("[clrsPython] Download complete ✅")
 
 if clrs_root not in sys.path:
@@ -173,7 +188,7 @@ for sub in glob.glob(os.path.join(clrs_root, "*")):
         sys.path.append(sub)
 
 
-def get(name, wholeFile = False):
+def get(name: str, wholeFile: bool = False):
     matches = glob.glob(os.path.join(clrs_root, "**", f"{name}.py"), recursive=True)
     if not matches:
         raise ModuleNotFoundError(f"Could not find {name}.py anywhere inside clrsPython/")
@@ -182,8 +197,8 @@ def get(name, wholeFile = False):
     spec = importlib.util.spec_from_file_location(name, file_path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    
-    def snake_to_pascal(s: str) -> str:
+
+    def snake_to_pascal(s):
         return ''.join(p.capitalize() for p in s.split('_'))
 
     pascal = snake_to_pascal(name)
@@ -191,7 +206,7 @@ def get(name, wholeFile = False):
         obj = getattr(mod, pascal)
         if isinstance(obj, type):
             return obj
-        
+
     classes = [getattr(mod, a) for a in dir(mod)
                if isinstance(getattr(mod, a), type) and getattr(mod, a).__module__ == mod.__name__]
     if not wholeFile:
@@ -199,6 +214,7 @@ def get(name, wholeFile = False):
             return classes[0]
 
     return mod
+
 </code></pre>
 
 <div class="checkbox-area">
@@ -297,6 +313,7 @@ def get(name, wholeFile = False):
 
 </body>
 </html>
+
 
 
 
