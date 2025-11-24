@@ -164,7 +164,7 @@ def find_folder_upwards(folder_name: str, start_dir: str, max_backwards: int = 3
 current_dir = os.path.dirname(os.path.abspath(__file__))
 clrs_root = find_folder_upwards("clrsPython", current_dir, max_backwards=3)
 
-if not os.path.isdir(clrs_root):
+if clrs_root is None:
     print("[clrsPython] Folder not found — downloading CLRS library...")
 
     zip_path = os.path.join(current_dir, "clrsPython.zip")
@@ -178,7 +178,16 @@ if not os.path.isdir(clrs_root):
     if os.path.exists(zip_path):
         os.remove(zip_path)
 
-    print("[clrsPython] Download complete ✅")
+    possible_dirs = [
+        d for d in glob.glob(os.path.join(current_dir, "*"))
+        if os.path.isdir(d) and "clrs" in os.path.basename(d).lower()
+    ]
+
+    if not possible_dirs:
+        raise RuntimeError("CLRS library extracted, but folder not found.")
+
+    clrs_root = possible_dirs[0]
+    print(f"[clrsPython] Download complete — using folder: {clrs_root} ✅")
 
 if clrs_root not in sys.path:
     sys.path.append(clrs_root)
@@ -214,6 +223,7 @@ def get(name: str, wholeFile: bool = False):
             return classes[0]
 
     return mod
+
 
 </code></pre>
 
@@ -313,6 +323,7 @@ def get(name: str, wholeFile: bool = False):
 
 </body>
 </html>
+
 
 
 
