@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForensicsBase</title>
+
+<style>
+/* === Base layout === */
+body {
+    margin: 0;
+    background-color: #000;
+    color: #ccc;
+    font-family: "Inter", "Segoe UI", Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 10px;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    text-align: center;
+}
+
+h2 {
+    color: #fff;
+    font-weight: 400;
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    margin-top: 40px;
+    text-align: center;
+}
+
+p {
+    max-width: 800px;
+    line-height: 1.6em;
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* === Panels === */
+.box {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 850px;
+    width: 100%;
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+
+ul {
+    text-align: left;
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.6em;
+}
+
+/* === Checkbox + Button === */
+.checkbox-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    user-select: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.3);
+    accent-color: #888;
+    cursor: pointer;
+}
+
+.btn {
+    margin-top: 25px;
+    background-color: #444;
+    border: none;
+    padding: 12px 28px;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.btn:hover {
+    background-color: #666;
+}
+
+.btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* === Footer === */
+.footer {
+    margin-top: 50px;
+    font-size: 0.8rem;
+    color: #777;
+    text-align: center;
+}
+
+/* === Mobile tweaks === */
+@media (max-width: 600px) {
+    body {
+        padding: 25px 14px;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 340px;
+        padding: 14px;
+        font-size: 1rem;
+    }
+}
+
+/* === Modal === */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+    opacity: 1;
+    z-index: 10;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal {
+    background: rgba(26, 26, 26, 0.92);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 22px;
+    max-width: 460px;
+    width: 90%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.modal h3 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.modal p {
+    margin: 0 0 10px;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.modal ul {
+    margin: 10px 0 16px;
+    padding-left: 18px;
+    line-height: 1.6em;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.modal-btn {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.modal-btn.confirm {
+    background: #8a2dff;
+    color: #fff;
+}
+
+.modal-btn.confirm:hover {
+    background: #a45bff;
+}
+
+.modal-btn.cancel {
+    background: #2b2b2b;
+    color: #ddd;
+}
+
+.modal-btn.cancel:hover {
+    background: #3a3a3a;
+}
+</style>
+</head>
+
+<body>
+
+<h1>ForensicsBase</h1>
+
+<p>
+A pre-configured forensic workstation base image designed for consistency,
+performance, and academic integrity.<br>
+Built for disk-based digital forensics coursework and lab environments.
+</p>
+
+<h2>Included Tools</h2>
+<div class="box">
+<ul>
+    <li>Autopsy & Sleuth Kit</li>
+    <li>FTK Imager</li>
+    <li>Eric Zimmerman forensic tools (Amcache, Prefetch, LNK, Registry, ShellBags, etc.)</li>
+    <li>ExifTool & metadata viewers</li>
+    <li>SQLite database viewers</li>
+    <li>Hex editors and forensic search utilities</li>
+    <li>Performance-tuned LTSC Windows environment</li>
+</ul>
+</div>
+
+<h2>Image Details</h2>
+<div class="box">
+<ul>
+    <li>Base Image: Windows 11 Enterprise LTSC</li>
+    <li>Windows Defender: Deleted</li>
+    <li>Image Size: ~25 GB (base disk)</li>
+    <li>VMware Tools: Preinstalled (VMware-only use)</li>
+</ul>
+</div>
+
+<h2>Disclaimer</h2>
+<div class="box">
+<p>
+This image is provided <strong>solely as a standardised forensic workstation environment</strong>.
+It contains <strong>no evidence, case data, analysis results, or coursework material</strong>.
+</p>
+<p>
+All forensic analysis must be conducted independently by each user using the
+official evidence supplied via Moodle or authorised sources.
+</p>
+<p>
+By downloading this image, you acknowledge that:
+</p>
+<ul>
+    <li>You are responsible for your own analysis and submissions</li>
+    <li>The image is not a source of answers or findings</li>
+    <li>You will not redistribute evidence within the image</li>
+    <li>You will comply with University assessment regulations</li>
+    <li>You will run it only with VMware products and avoid storing personal data because Windows Defender is removed</li>
+</ul>
+</div>
+
+<div class="checkbox-area">
+    <input type="checkbox" id="agree">
+    <label for="agree">I have read and accept the disclaimer</label>
+</div>
+
+<button id="downloadBtn" class="btn" disabled>
+Download ForensicsBase Image
+</button>
+
+<div id="confirmOverlay" class="overlay hidden" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <h3 id="confirmTitle">Confirm Download</h3>
+        <p>This deployment is automatic and intended only for VMware products.</p>
+        <ul>
+            <li>It can wipe your entire drive if misused.</li>
+            <li>VMware Tools are preinstalled; use VMware only.</li>
+            <li>For forensic use only. Do not store personal data (Windows Defender removed).</li>
+        </ul>
+        <div class="modal-actions">
+            <button id="modalCancel" class="modal-btn cancel" type="button">No</button>
+            <button id="modalConfirm" class="modal-btn confirm" type="button">Yes</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+© 2026 Elias Ailenei — For educational use only
+</div>
+
+<script>
+(() => {
+    const agree = document.getElementById("agree");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const overlay = document.getElementById("confirmOverlay");
+    const modalConfirm = document.getElementById("modalConfirm");
+    const modalCancel = document.getElementById("modalCancel");
+    const downloadUrl = "https://1drv.ms/u/c/8da4a1a5936a8b6e/IQBTQ77Zal_GQZr3M6OtKjqeAfpKxCUa6feSea6QnuBDugk?e=SgDj4G"; // CHANGE THIS LINK TO YOUR ACTUAL DOWNLOAD
+
+    const openModal = () => {
+        overlay.classList.remove("hidden");
+        overlay.setAttribute("aria-hidden", "false");
+        modalConfirm.focus();
+    };
+
+    const closeModal = () => {
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-hidden", "true");
+    };
+
+    agree.addEventListener("change", () => {
+        downloadBtn.disabled = !agree.checked;
+    });
+
+    downloadBtn.addEventListener("click", () => {
+        if (downloadBtn.disabled) return;
+        openModal();
+    });
+
+    modalConfirm.addEventListener("click", () => {
+        closeModal();
+        window.location.href = downloadUrl;
+    });
+
+    modalCancel.addEventListener("click", () => {
+        closeModal();
+    });
+
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeModal();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>
