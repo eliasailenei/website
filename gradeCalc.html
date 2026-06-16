@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>University Final Grade Calculator</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9dee8;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --danger: #dc2626;
+      --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+      --radius: 16px;
+      --input-height: 46px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      font-size: 16px;
+    }
+
+    header {
+      padding: 22px 14px;
+      background: linear-gradient(135deg, #172033, #273a63);
+      color: white;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3 { margin: 0; }
+
+    h1 {
+      font-size: 1.55rem;
+      line-height: 1.15;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: .96rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .card h2 {
+      font-size: 1.08rem;
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: .92rem;
+      margin: 0 0 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: stretch;
+      margin: 12px 0;
+    }
+
+    button, .file-label {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      min-height: var(--input-height);
+      padding: 11px 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 750;
+      font-size: .96rem;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      user-select: none;
+      text-align: center;
+      width: 100%;
+      touch-action: manipulation;
+    }
+
+    button:hover, .file-label:hover { background: var(--accent-dark); }
+
+    button.secondary {
+      background: #eef2ff;
+      color: #1e3a8a;
+      border: 1px solid #c7d2fe;
+    }
+
+    button.secondary:hover { background: #e0e7ff; }
+
+    button.danger {
+      background: #fff1f2;
+      color: var(--danger);
+      border: 1px solid #fecdd3;
+    }
+
+    button.danger:hover { background: #ffe4e6; }
+
+    input, select {
+      width: 100%;
+      min-height: var(--input-height);
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: white;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    input[readonly] {
+      background: #f8fafc;
+      color: #475467;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      font-size: .9rem;
+      color: #344054;
+      font-weight: 650;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fafbff;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .stat .value {
+      font-size: 1.38rem;
+      font-weight: 850;
+      margin-top: 4px;
+    }
+
+    .formula {
+      background: #0f172a;
+      color: #dbeafe;
+      padding: 13px;
+      border-radius: 12px;
+      overflow: auto;
+      font-family: Consolas, Monaco, monospace;
+      font-size: .86rem;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+
+    .notice {
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      margin: 10px 0;
+    }
+
+    .ok {
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      margin: 10px 0;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 12px 14px 0;
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+    }
+
+    .tab {
+      background: #e9eef7;
+      color: #344054;
+      border: 1px solid var(--border);
+      min-height: 44px;
+      font-size: .92rem;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .table-wrap {
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      max-height: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: .95rem;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: grid;
+      gap: 12px;
+    }
+
+    tr {
+      display: grid;
+      gap: 9px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 12px;
+      box-shadow: 0 5px 16px rgba(16, 24, 40, 0.05);
+    }
+
+    tr.assessment-row {
+      margin-left: 16px;
+      background: #fbfcff;
+      border-style: dashed;
+      position: relative;
+    }
+
+    tr.assessment-row::before {
+      content: "Assessment";
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: #fbfcff;
+      color: var(--muted);
+      padding: 0 7px;
+      font-size: .78rem;
+      font-weight: 750;
+    }
+
+    td {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      border-bottom: 0;
+      padding: 0;
+      vertical-align: middle;
+    }
+
+    td::before {
+      content: attr(data-label);
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 750;
+      line-height: 1.15;
+    }
+
+    td:first-child {
+      grid-template-columns: 1fr;
+    }
+
+    td:first-child::before {
+      display: none;
+    }
+
+    td[data-label="Actions"] {
+      grid-template-columns: 1fr;
+    }
+
+    td[data-label="Actions"]::before {
+      display: none;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .wide, .small, .tiny {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .hidden { display: none !important; }
+
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 18px 14px 24px;
+      font-size: .9rem;
+    }
+
+    input[type="file"] { display: none; }
+
+    .url-box {
+      width: 100%;
+      min-height: 88px;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: .82rem;
+      color: #344054;
+      background: #f8fafc;
+    }
+
+    /* Desktop / tablet upgrade */
+    @media (min-width: 720px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      header {
+        padding: 28px 18px;
+      }
+
+      .grid {
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .grid.two {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+      }
+
+      button, .file-label {
+        width: auto;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .tabs {
+        display: flex;
+        position: static;
+        padding: 18px 18px 0;
+      }
+
+      .tab {
+        width: auto;
+      }
+    }
+
+    @media (min-width: 980px) {
+      .summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        max-height: 650px;
+      }
+
+      table {
+        border-collapse: collapse;
+        font-size: .92rem;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      tbody {
+        display: table-row-group;
+      }
+
+      tr {
+        display: table-row;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      tr.module-row {
+        background: #ffffff;
+      }
+
+      tr.assessment-row {
+        margin-left: 0;
+        background: #fbfcff;
+        border-style: none;
+      }
+
+      tr.assessment-row::before {
+        display: none;
+      }
+
+      th {
+        background: #f0f3f8;
+        color: #344054;
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      td {
+        display: table-cell;
+        padding: 8px;
+        border-bottom: 1px solid #eaecf0;
+        vertical-align: middle;
+      }
+
+      td::before {
+        display: none;
+      }
+
+      tr.assessment-row td:first-child {
+        padding-left: 30px;
+        color: var(--muted);
+      }
+
+      td:first-child {
+        display: table-cell;
+      }
+
+      td[data-label="Actions"] {
+        display: table-cell;
+      }
+
+      .small { width: 95px; }
+      .tiny { width: 72px; }
+      .wide { min-width: 240px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>University Final Grade Calculator</h1>
+      <p>Add modules, credits, module grades, and assessment weights. The calculator updates automatically.</p>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button type="button" class="tab active" data-tab="overview">Overview</button>
+    <button type="button" class="tab" data-tab="weights">Weights + Formulas</button>
+  </nav>
+
+  <main class="wrap">
+    <section id="overview" class="grid two">
+      <div class="card">
+        <h2>Overall result</h2>
+        <p class="hint">Edit the year weighting below. Common UK setup: Year 2 = 10%, Year 3 = 90%.</p>
+
+        <div class="summary-grid">
+          <div class="stat">
+            <div class="label">Level 5 / Year 2 average</div>
+            <div class="value" id="l5Avg">-</div>
+          </div>
+          <div class="stat">
+            <div class="label">Level 6 / Year 3 average</div>
+            <div class="value" id="l6Avg">-</div>
+          </div>
+          <div class="stat">
+            <div class="label">Final weighted %</div>
+            <div class="value" id="finalAvg">-</div>
+          </div>
+          <div class="stat">
+            <div class="label">Classification</div>
+            <div class="value" id="classification">-</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label>Year 2 / Level 5 degree weight
+            <input id="weightL5" type="number" min="0" max="100" step="1" value="10" />
+          </label>
+          <label>Year 3 / Level 6 degree weight
+            <input id="weightL6" type="number" min="0" max="100" step="1" value="90" />
+          </label>
+        </div>
+
+        <div class="notice">
+          Blank grades are ignored instead of being counted as zero. Enter grades as you receive them.
+        </div>
+
+        <div class="formula" id="formulaBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>Save, share, import</h2>
+        <p class="hint">Data is saved in localStorage and also encoded into the URL hash, so it works on GitHub Pages and can be shared as a link.</p>
+        <div class="controls">
+          <button type="button" data-action="add-module">+ Add module</button>
+          <button type="button" class="secondary" data-action="copy-link">Copy share link</button>
+          <button type="button" class="secondary" data-action="export-data">Export JSON</button>
+          <label class="file-label">
+            Import JSON
+            <input id="importInput" type="file" accept="application/json" />
+          </label>
+          <button type="button" class="danger" data-action="reset-data">Reset</button>
+        </div>
+
+        <textarea id="shareUrl" class="url-box" readonly></textarea>
+
+        <div id="saveStatus" class="ok hidden">Saved.</div>
+
+        <h3 style="margin-top:18px;">Grade boundaries</h3>
+        <table>
+          <thead>
+            <tr><th>Classification</th><th>Boundary</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>First</td><td>70%+</td></tr>
+            <tr><td>Upper Second / 2:1</td><td>60–69%</td></tr>
+            <tr><td>Lower Second / 2:2</td><td>50–59%</td></tr>
+            <tr><td>Third</td><td>40–49%</td></tr>
+            <tr><td>Fail</td><td>Below 40%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="weights" class="grid hidden">
+      <div class="card">
+        <h2>Modules, weights, and assessment formulas</h2>
+        <p class="hint">
+          Module rows calculate from their assessment rows when assessments exist. The module Grade % box becomes automatic. If a module has no assessments, type the module grade directly.
+        </p>
+
+        <div class="controls">
+          <button type="button" data-action="add-module">+ Add module</button>
+          <button type="button" class="secondary" data-action="add-year3-template">+ Add blank Year 3 template</button>
+          <button type="button" class="secondary" data-action="clear-all-grades">Clear all grades</button>
+        </div>
+
+        <div class="table-wrap">
+          <table id="moduleTable">
+            <thead>
+              <tr>
+                <th class="wide">Module / Assessment</th>
+                <th class="small">Level</th>
+                <th class="small">Credits</th>
+                <th class="small">Weight %</th>
+                <th class="small">Grade %</th>
+                <th class="small">Calculated %</th>
+                <th class="wide">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="moduleBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">
+    One-file calculator. No server. Data is stored in localStorage and in the URL hash.
+  </div>
+
+  <script>
+    const STORAGE_KEY = "uniFinalGradeCalculator_v2";
+
+    const defaultData = {
+      degreeWeights: { l5: 10, l6: 90 },
+      modules: [
+        {
+          title: "Advanced Programming",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1549 Coursework", weight: 100, grade: "" }
+          ]
+        },
+        {
+          title: "Introduction to Computer Forensics",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1553 Report", weight: 50, grade: "" },
+            { title: "COMP 1553 Exam", weight: 50, grade: "" }
+          ]
+        },
+        {
+          title: "Computer Networks",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1560 Portfolio", weight: 100, grade: "" }
+          ]
+        },
+        {
+          title: "Operating Systems",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1562 Logbook", weight: 75, grade: "" },
+            { title: "COMP 1562 Class Test (Quiz)", weight: 25, grade: "" }
+          ]
+        },
+        {
+          title: "Information Security",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1806 Coursework", weight: 60, grade: "" },
+            { title: "COMP 1806 Examination", weight: 40, grade: "" }
+          ]
+        },
+        {
+          title: "Advanced Algorithms and Data Structures",
+          level: 5,
+          credits: 15,
+          directGrade: "",
+          assessments: [
+            { title: "COMP 1828 Coursework", weight: 100, grade: "" }
+          ]
+        },
+        {
+          title: "Computational Methods and Numerical Techniques",
+          level: 5,
+          credits: 30,
+          directGrade: "",
+          assessments: [
+            { title: "MATH 1180 Coursework 1", weight: 50, grade: "" },
+            { title: "MATH 1180 Coursework 2", weight: 50, grade: "" }
+          ]
+        }
+      ]
+    };
+
+    let data = clone(defaultData);
+    let saveTimer = null;
+
+    function showTab(id, btn) {
+      document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function structuredCloneFallback(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function clone(obj) {
+      if (typeof structuredClone === "function") return structuredClone(obj);
+      return structuredCloneFallback(obj);
+    }
+
+    function getHashData() {
+      const hash = window.location.hash || "";
+      const match = hash.match(/(?:^#|&)data=([^&]+)/);
+      return match ? match[1] : null;
+    }
+
+    function encodeState(obj) {
+      const json = JSON.stringify(obj);
+      const bytes = new TextEncoder().encode(json);
+      let binary = "";
+      bytes.forEach(byte => binary += String.fromCharCode(byte));
+      return btoa(binary)
+        .replaceAll("+", "-")
+        .replaceAll("/", "_")
+        .replaceAll("=", "");
+    }
+
+    function decodeState(encoded) {
+      let base64 = encoded.replaceAll("-", "+").replaceAll("_", "/");
+      while (base64.length % 4) base64 += "=";
+      const binary = atob(base64);
+      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    function currentUrlWithState() {
+      const encoded = encodeState(data);
+      return `${window.location.origin}${window.location.pathname}#data=${encoded}`;
+    }
+
+    function updateUrl() {
+      const url = currentUrlWithState();
+      history.replaceState(null, "", url);
+      document.getElementById("shareUrl").value = url;
+    }
+
+    function loadData() {
+      const hashData = getHashData();
+
+      if (hashData) {
+        try {
+          data = normaliseData(decodeState(hashData));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+          console.warn("Could not load URL data. Trying localStorage.", e);
+          loadFromLocalStorageOrDefault();
+        }
+      } else {
+        loadFromLocalStorageOrDefault();
+      }
+
+      document.getElementById("weightL5").value = data.degreeWeights.l5;
+      document.getElementById("weightL6").value = data.degreeWeights.l6;
+      render();
+      updateUrl();
+    }
+
+    function loadFromLocalStorageOrDefault() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          data = normaliseData(JSON.parse(saved));
+          return;
+        } catch (e) {
+          console.warn("Saved data was invalid. Using defaults.", e);
+        }
+      }
+      data = clone(defaultData);
+    }
+
+    function normaliseData(input) {
+      const clean = input && typeof input === "object" ? input : clone(defaultData);
+      clean.degreeWeights = clean.degreeWeights || { l5: 10, l6: 90 };
+      clean.degreeWeights.l5 = numOrZero(clean.degreeWeights.l5);
+      clean.degreeWeights.l6 = numOrZero(clean.degreeWeights.l6);
+      clean.modules = Array.isArray(clean.modules) ? clean.modules : [];
+      clean.modules = clean.modules.map(m => ({
+        title: String(m.title ?? "Untitled Module"),
+        level: numOrZero(m.level || 5),
+        credits: numOrZero(m.credits || 15),
+        directGrade: normaliseMaybeNumber(m.directGrade),
+        assessments: Array.isArray(m.assessments) ? m.assessments.map(a => ({
+          title: String(a.title ?? "Assessment"),
+          weight: numOrZero(a.weight || 0),
+          grade: normaliseMaybeNumber(a.grade)
+        })) : []
+      }));
+      return clean;
+    }
+
+    function normaliseMaybeNumber(value) {
+      if (value === "" || value === null || value === undefined) return "";
+      const n = Number(value);
+      return Number.isFinite(n) ? n : "";
+    }
+
+    function saveData(showStatus = false) {
+      data.degreeWeights.l5 = numOrZero(document.getElementById("weightL5").value);
+      data.degreeWeights.l6 = numOrZero(document.getElementById("weightL6").value);
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      updateUrl();
+
+      if (showStatus) {
+        const el = document.getElementById("saveStatus");
+        el.classList.remove("hidden");
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => el.classList.add("hidden"), 1400);
+      }
+    }
+
+    function resetData() {
+      if (!confirm("Reset everything back to the blank template?")) return;
+      data = clone(defaultData);
+      localStorage.removeItem(STORAGE_KEY);
+      render();
+      saveData(true);
+    }
+
+    function exportData() {
+      saveData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "grade-calculator-data.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          data = normaliseData(JSON.parse(reader.result));
+          render();
+          saveData(true);
+        } catch {
+          alert("Could not import this file. It needs to be JSON exported from this calculator.");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    async function copyLink() {
+      saveData();
+      const url = currentUrlWithState();
+      document.getElementById("shareUrl").value = url;
+
+      try {
+        await navigator.clipboard.writeText(url);
+        const el = document.getElementById("saveStatus");
+        el.textContent = "Share link copied.";
+        el.classList.remove("hidden");
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          el.textContent = "Saved.";
+          el.classList.add("hidden");
+        }, 1600);
+      } catch {
+        alert("Copy failed. You can manually copy the link from the box.");
+      }
+    }
+
+    function maybeNum(value) {
+      if (value === "" || value === null || value === undefined) return null;
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function numOrZero(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function moduleGrade(module) {
+      const assessments = module.assessments || [];
+
+      if (assessments.length > 0) {
+        let totalWeight = 0;
+        let weighted = 0;
+        let hasAnyGrade = false;
+
+        for (const a of assessments) {
+          const w = numOrZero(a.weight);
+          const g = maybeNum(a.grade);
+
+          if (g !== null) {
+            hasAnyGrade = true;
+            totalWeight += w;
+            weighted += (w * g);
+          }
+        }
+
+        if (!hasAnyGrade || totalWeight === 0) return null;
+        return weighted / totalWeight;
+      }
+
+      return maybeNum(module.directGrade);
+    }
+
+    function yearAverage(level) {
+      const mods = data.modules.filter(m => Number(m.level) === level);
+      let credits = 0;
+      let weighted = 0;
+
+      for (const m of mods) {
+        const grade = moduleGrade(m);
+        if (grade === null) continue;
+
+        const c = numOrZero(m.credits);
+        credits += c;
+        weighted += grade * c;
+      }
+
+      if (credits === 0) return null;
+      return weighted / credits;
+    }
+
+    function yearCredits(level) {
+      return data.modules
+        .filter(m => Number(m.level) === level && moduleGrade(m) !== null)
+        .reduce((sum, m) => sum + numOrZero(m.credits), 0);
+    }
+
+    function classification(grade) {
+      if (grade === null || Number.isNaN(grade)) return "-";
+      if (grade >= 70) return "First";
+      if (grade >= 60) return "2:1";
+      if (grade >= 50) return "2:2";
+      if (grade >= 40) return "Third";
+      return "Fail";
+    }
+
+    function format(n) {
+      if (n === null || Number.isNaN(n)) return "-";
+      return `${n.toFixed(2)}%`;
+    }
+
+    function displayNumber(n) {
+      if (n === null || Number.isNaN(n)) return "";
+      return Number(n).toFixed(2);
+    }
+
+    function calculate() {
+      data.degreeWeights.l5 = numOrZero(document.getElementById("weightL5").value);
+      data.degreeWeights.l6 = numOrZero(document.getElementById("weightL6").value);
+
+      const l5 = yearAverage(5);
+      const l6 = yearAverage(6);
+      const w5 = data.degreeWeights.l5;
+      const w6 = data.degreeWeights.l6;
+
+      let finalGrade = null;
+      const usableWeights = (l5 !== null ? w5 : 0) + (l6 !== null ? w6 : 0);
+
+      if (usableWeights > 0) {
+        finalGrade =
+          ((l5 !== null ? l5 * w5 : 0) + (l6 !== null ? l6 * w6 : 0)) / usableWeights;
+      }
+
+      document.getElementById("l5Avg").textContent = format(l5);
+      document.getElementById("l6Avg").textContent = format(l6);
+      document.getElementById("finalAvg").textContent = format(finalGrade);
+      document.getElementById("classification").textContent = classification(finalGrade);
+
+      const l5Credits = yearCredits(5);
+      const l6Credits = yearCredits(6);
+
+      document.getElementById("formulaBox").textContent =
+`Module grade = SUM(entered assessment grade × assessment weight) / SUM(weights for entered assessment grades)
+
+Year average = SUM(module grade × credits) / SUM(credits for modules with entered grades)
+
+Final weighted % = (Level 5 average × ${w5} + Level 6 average × ${w6}) / total usable degree weight
+
+Current:
+Level 5 = ${format(l5)} from ${l5Credits} completed/entered credits
+Level 6 = ${format(l6)} from ${l6Credits} completed/entered credits
+Final = ${format(finalGrade)} (${classification(finalGrade)})
+
+Note:
+Blank grades are ignored. If you want a missing exam/coursework to count as 0, type 0.`;
+
+      saveData();
+      updateCalculatedCells();
+    }
+
+    function render() {
+      const body = document.getElementById("moduleBody");
+      body.innerHTML = "";
+
+      data.modules.forEach((m, mi) => {
+        const tr = document.createElement("tr");
+        tr.className = "module-row";
+        tr.innerHTML = `
+          <td data-label="Module"><input class="wide" value="${escapeAttr(m.title)}" data-edit="module" data-index="${mi}" data-field="title" /></td>
+          <td data-label="Level"><input class="tiny" type="number" min="4" max="7" value="${escapeAttr(m.level)}" data-edit="module" data-index="${mi}" data-field="level" /></td>
+          <td data-label="Credits"><input class="tiny" type="number" min="0" value="${escapeAttr(m.credits)}" data-edit="module" data-index="${mi}" data-field="credits" /></td>
+          <td data-label="Weight"><strong>Module</strong></td>
+          <td data-label="Grade">
+            <input
+              id="module-grade-${mi}"
+              class="tiny"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="${(m.assessments || []).length > 0 ? "auto" : "blank"}"
+              value="${escapeAttr((m.assessments || []).length > 0 ? displayNumber(moduleGrade(m)) : m.directGrade)}"
+              data-edit="module"
+              data-index="${mi}"
+              data-field="directGrade"
+              ${(m.assessments || []).length > 0 ? "readonly title='This is calculated from the assessments below.'" : ""}
+            />
+          </td>
+          <td data-label="Calculated" id="calc-${mi}"><strong>${format(moduleGrade(m))}</strong></td>
+          <td data-label="Actions">
+            <div class="actions">
+              <button type="button" class="secondary" data-action="add-assessment" data-index="${mi}">+ Assessment</button>
+              <button type="button" class="danger" data-action="delete-module" data-index="${mi}">Delete</button>
+            </div>
+          </td>
+        `;
+        body.appendChild(tr);
+
+        (m.assessments || []).forEach((a, ai) => {
+          const ar = document.createElement("tr");
+          ar.className = "assessment-row";
+          ar.innerHTML = `
+            <td data-label="Assessment"><input class="wide" value="${escapeAttr(a.title)}" data-edit="assessment" data-module="${mi}" data-assessment="${ai}" data-field="title" /></td>
+            <td data-label="Type" colspan="2">Assessment</td>
+            <td data-label="Weight"><input class="tiny" type="number" min="0" max="100" step="0.01" value="${escapeAttr(a.weight)}" data-edit="assessment" data-module="${mi}" data-assessment="${ai}" data-field="weight" /></td>
+            <td data-label="Grade"><input class="tiny" type="number" min="0" max="100" step="0.01" placeholder="blank" value="${escapeAttr(a.grade)}" data-edit="assessment" data-module="${mi}" data-assessment="${ai}" data-field="grade" /></td>
+            <td data-label="Contribution" id="assess-calc-${mi}-${ai}">${assessmentContribution(a)}</td>
+            <td data-label="Actions"><button type="button" class="danger" data-action="delete-assessment" data-module="${mi}" data-assessment="${ai}">Delete assessment</button></td>
+          `;
+          body.appendChild(ar);
+        });
+      });
+
+      calculate();
+    }
+
+    function assessmentContribution(a) {
+      const g = maybeNum(a.grade);
+      if (g === null) return "-";
+      return format((numOrZero(a.weight) * g) / 100);
+    }
+
+    function updateCalculatedCells() {
+      data.modules.forEach((m, mi) => {
+        const grade = moduleGrade(m);
+
+        const cell = document.getElementById(`calc-${mi}`);
+        if (cell) cell.innerHTML = `<strong>${format(grade)}</strong>`;
+
+        const moduleGradeInput = document.getElementById(`module-grade-${mi}`);
+        if (moduleGradeInput && (m.assessments || []).length > 0) {
+          moduleGradeInput.value = displayNumber(grade);
+        }
+
+        (m.assessments || []).forEach((a, ai) => {
+          const assessmentCell = document.getElementById(`assess-calc-${mi}-${ai}`);
+          if (assessmentCell) assessmentCell.textContent = assessmentContribution(a);
+        });
+      });
+    }
+
+    function editModule(index, field, value) {
+      if (field === "directGrade" && (data.modules[index].assessments || []).length > 0) {
+        calculate();
+        return;
+      }
+
+      if (["level", "credits"].includes(field)) value = numOrZero(value);
+      if (["directGrade"].includes(field)) value = normaliseMaybeNumber(value);
+      data.modules[index][field] = value;
+      calculate();
+    }
+
+    function editAssessment(mi, ai, field, value) {
+      if (["weight"].includes(field)) value = numOrZero(value);
+      if (["grade"].includes(field)) value = normaliseMaybeNumber(value);
+      data.modules[mi].assessments[ai][field] = value;
+      calculate();
+    }
+
+    function addModule() {
+      data.modules.push({
+        title: "New Module",
+        level: 6,
+        credits: 15,
+        directGrade: "",
+        assessments: []
+      });
+      render();
+    }
+
+    function addExampleYear3() {
+      const names = [
+        "Year 3 Module 1",
+        "Year 3 Module 2",
+        "Year 3 Module 3",
+        "Year 3 Module 4",
+        "Final Year Project"
+      ];
+
+      names.forEach((name, i) => {
+        data.modules.push({
+          title: name,
+          level: 6,
+          credits: i === 4 ? 30 : 15,
+          directGrade: "",
+          assessments: []
+        });
+      });
+
+      render();
+    }
+
+    function deleteModule(index) {
+      if (!confirm("Delete this module?")) return;
+      data.modules.splice(index, 1);
+      render();
+    }
+
+    function addAssessment(moduleIndex) {
+      if (!data.modules[moduleIndex].assessments) data.modules[moduleIndex].assessments = [];
+      data.modules[moduleIndex].assessments.push({
+        title: "New Assessment",
+        weight: 100,
+        grade: ""
+      });
+      render();
+    }
+
+    function deleteAssessment(moduleIndex, assessmentIndex) {
+      if (!confirm("Delete this assessment?")) return;
+      data.modules[moduleIndex].assessments.splice(assessmentIndex, 1);
+      render();
+    }
+
+    function clearAllGrades() {
+      if (!confirm("Clear every entered grade?")) return;
+      data.modules.forEach(m => {
+        m.directGrade = "";
+        (m.assessments || []).forEach(a => a.grade = "");
+      });
+      render();
+    }
+
+    function escapeAttr(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      const action = button.dataset.action;
+
+      if (button.dataset.tab) {
+        showTab(button.dataset.tab, button);
+        return;
+      }
+
+      if (!action) return;
+
+      if (action === "add-module") addModule();
+      if (action === "add-year3-template") addExampleYear3();
+      if (action === "delete-module") deleteModule(Number(button.dataset.index));
+      if (action === "add-assessment") addAssessment(Number(button.dataset.index));
+      if (action === "delete-assessment") deleteAssessment(Number(button.dataset.module), Number(button.dataset.assessment));
+      if (action === "clear-all-grades") clearAllGrades();
+      if (action === "copy-link") copyLink();
+      if (action === "export-data") exportData();
+      if (action === "reset-data") resetData();
+    });
+
+    document.addEventListener("input", (event) => {
+      const el = event.target;
+      if (!el.dataset.edit) return;
+
+      if (el.dataset.edit === "module") {
+        editModule(Number(el.dataset.index), el.dataset.field, el.value);
+      }
+
+      if (el.dataset.edit === "assessment") {
+        editAssessment(Number(el.dataset.module), Number(el.dataset.assessment), el.dataset.field, el.value);
+      }
+    });
+
+    document.getElementById("weightL5").addEventListener("input", calculate);
+    document.getElementById("weightL6").addEventListener("input", calculate);
+    document.getElementById("importInput").addEventListener("change", importData);
+
+    window.addEventListener("hashchange", () => {
+      const hashData = getHashData();
+      if (!hashData) return;
+      try {
+        const incoming = normaliseData(decodeState(hashData));
+        if (JSON.stringify(incoming) !== JSON.stringify(data)) {
+          data = incoming;
+          document.getElementById("weightL5").value = data.degreeWeights.l5;
+          document.getElementById("weightL6").value = data.degreeWeights.l6;
+          render();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+      } catch (e) {
+        console.warn("Invalid hash data ignored.", e);
+      }
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
